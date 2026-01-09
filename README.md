@@ -20,7 +20,7 @@ The goal is to build an application that allows querying a collection of PDF CVs
 
 ## 🎥 Demo
 
-[![AI-Powered CV Screener Demo](https://img.youtube.com/vi/your-video-id/0.jpg)](https://www.youtube.com/watch?v=your-video-id)
+[Watch Demo Video](https://res.cloudinary.com/dlpvgtdlv/video/upload/v1767991719/personal/Full-Stack_AIEngineer_-_Ivan_Escribano_xhpiin.mp4)
 
 ---
 
