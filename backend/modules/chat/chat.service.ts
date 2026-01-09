@@ -90,9 +90,9 @@ const buildRetrievalContext = async (userQuery: string): Promise<RetrievalContex
     similarity: chunk.similarity,
   }));
 
-  const uniqueDocumentIds = [...new Set(relevantChunks.map((c) => c.fileId))];
+  const uniqueFileIds = [...new Set(relevantChunks.map((c) => c.fileId))];
 
-  const fullDocuments = await getFullDocumentContext(uniqueDocumentIds);
+  const fullDocuments = await getFullDocumentContext(uniqueFileIds);
 
   const documentContentMap = __groupChunksByDocument(fullDocuments);
 

@@ -6,6 +6,7 @@ export const EnvironmentConfig = {
   SUPABASE: {
     URL: process.env.SUPABASE_URL || '',
     ANON_KEY: process.env.SUPABASE_ANON_KEY || '',
+    VECTOR_TABLE_NAME: 'cv_chunks',
   },
   OPENAI: {
     API_KEY: process.env.OPENAI_API_KEY || '',
