@@ -190,17 +190,19 @@ CVS_PATH=./data/cvs
 
 ```bash
 cd backend
-npx tsx scripts/cv-generator/cv-generator.script.ts
+npm run generate:cvs
+# or manually: npx tsx scripts/cv-generator/cv-generator.script.ts
 ```
 
 This will generate PDF CVs with AI-generated data and headshots in `/data/cvs/`.
 
 ### Ingest CVs to Vector Database
 
-After placing your PDFs in `/backend/data/cvs/`, run the ingest endpoint:
+After placing your PDFs in `/backend/data/cvs/`, run the ingest script (server must be running):
 
 ```bash
-curl -X POST http://localhost:3001/api/ingest
+npm run ingest
+# or manually: curl -X POST http://localhost:3001/api/ingest
 ```
 
 This will process all PDFs, generate embeddings, and store them in Supabase.
@@ -311,3 +313,12 @@ AI-powered tool that generates professional LinkedIn carousels in minutes.
 A chatbot embedded in my web portfolio that answers questions about my experience, skills, and projects using RAG.
 
 [See Demo](https://www.linkedin.com/posts/ivan-escribano-dev_2020-3-meses-para-hacer-una-web-b%C3%A1sica-ugcPost-7397568041858891776-5km4)
+
+---
+
+## 🔗 Links
+
+- 🌐 [Portfolio](https://www.ivanescribano.com/)
+- 📝 [Substack](https://substack.com/@ivanescribano)
+- ✍️ [Medium](https://medium.com/@ivanescribano)
+- 💼 [LinkedIn](https://www.linkedin.com/in/ivan-escribano-dev/)

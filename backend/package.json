@@ -7,6 +7,8 @@
     "dev": "tsx watch index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "generate:cvs": "tsx scripts/cv-generator/cv-generator.script.ts",
+    "ingest": "curl -X POST http://localhost:3001/api/ingest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
