@@ -30,99 +30,99 @@
 
 ```
 tsx scripts/cv-generator/cv-generator.script.ts
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 1: Generate CV Data (OpenAI + Zod)                          |
-|  +--------------------------------------------------------------+ |
-|  |  {                                                            | |
-|  |    name: "Maria Garcia",                                      | |
-|  |    title: "Senior Frontend Developer",                        | |
-|  |    experience: [...], skills: [...], education: [...],        | |
-|  |    photoURL: "Professional woman, 30s, confident..."          | |
-|  |  }                                                            | |
-|  +--------------------------------------------------------------+ |
-|  Type-safe structured output guaranteed by Zod                    |
-+------------------------------------------------------------------+
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 2: Generate Headshot (Gemini 2.5 Flash)                     |
-|  photoURL description ------> [IMAGE BUFFER]                      |
-+------------------------------------------------------------------+
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 3: Generate PDF (pdfkit)                                    |
-|  +----------+                                                     |
-|  |  photo   |  MARIA GARCIA - Senior Frontend Developer           |
-|  +----------+  Experience - Skills - Education                    |
-+------------------------------------------------------------------+
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 4: Save to /data/cvs/maria_garcia.pdf                      |
-+------------------------------------------------------------------+
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 1 — Generate CV Data (OpenAI + Zod)                        │
+│  ┌──────────────────────────────────────────────────────────┐    │
+│  │  {                                                        │    │
+│  │    name: "Maria Garcia",                                  │    │
+│  │    title: "Senior Frontend Developer",                    │    │
+│  │    experience: [...], skills: [...], education: [...],    │    │
+│  │    photoURL: "Professional woman, 30s, confident..."      │    │
+│  │  }                                                        │    │
+│  └──────────────────────────────────────────────────────────┘     │
+│  Type-safe structured output guaranteed by Zod                    │
+└──────────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 2 — Generate Headshot (Gemini 2.5 Flash)                   │
+│  photoURL description ──────► [IMAGE BUFFER]                     │
+└──────────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 3 — Generate PDF (pdfkit)                                  │
+│  ┌──────────┐                                                    │
+│  │  photo   │  MARIA GARCIA — Senior Frontend Developer          │
+│  └──────────┘  Experience · Skills · Education                   │
+└──────────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 4 — Save to /data/cvs/maria_garcia.pdf                     │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ### Store Embeddings (PDF to Vector DB)
 
 ```
 POST /ingest
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 1: Read PDFs, convert to text and chunk                     |
-|  /cvs                                                             |
-|     |- maria_garcia.pdf  -->  { fileId, chunks: [...] }           |
-|     |- juan_lopez.pdf    -->  { fileId, chunks: [...] }           |
-|     |- ana_martinez.pdf  -->  { fileId, chunks: [...] }           |
-+------------------------------------------------------------------+
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 2: Generate embeddings in batch (OpenAI)                    |
-|                                                                   |
-|  Chunks ----------------------> Embeddings                        |
-|  ["Maria Garcia..."]           [0.021, -0.034, ...]               |
-|  ["5 years React..."]          [0.018, 0.042, ...]                |
-|  ["Juan Lopez..."]             [-0.011, 0.029, ...]               |
-|                                                                   |
-|  Single OpenAI call for all texts                                 |
-+------------------------------------------------------------------+
-     |
-     v
-+------------------------------------------------------------------+
-|  STEP 3: Store in Supabase (pgvector)                             |
-|  +--------------------------------------------------------------+ |
-|  | id | content           | embedding      | file_id | chunk    | |
-|  |----+-------------------+----------------+---------+----------| |
-|  | 1  | "Maria Garcia..." | [0.021, -0.03] | maria   | 0        | |
-|  | 2  | "5 years React..."| [0.018, 0.042] | maria   | 1        | |
-|  | 3  | "Juan Lopez..."   | [-0.011, 0.02] | juan    | 0        | |
-|  +--------------------------------------------------------------+ |
-+------------------------------------------------------------------+
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 1 — Read PDFs, convert to text and chunk                   │
+│  /cvs                                                            │
+│     ├─ maria_garcia.pdf  ──►  { fileId, chunks: [...] }         │
+│     ├─ juan_lopez.pdf    ──►  { fileId, chunks: [...] }         │
+│     └─ ana_martinez.pdf  ──►  { fileId, chunks: [...] }         │
+└──────────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 2 — Generate embeddings in batch (OpenAI)                  │
+│                                                                  │
+│  Chunks ─────────────────────► Embeddings                        │
+│  ["Maria Garcia..."]           [0.021, -0.034, ...]              │
+│  ["5 years React..."]          [0.018, 0.042, ...]               │
+│  ["Juan Lopez..."]             [-0.011, 0.029, ...]              │
+│                                                                  │
+│  Single OpenAI call for all texts                                │
+└──────────────────────────────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  STEP 3 — Store in Supabase (pgvector)                           │
+│  ┌──────────────────────────────────────────────────────────┐    │
+│  │ id │ content            │ embedding      │ file_id │ chunk│    │
+│  ├────┼────────────────────┼────────────────┼─────────┼──────┤    │
+│  │ 1  │ "Maria Garcia..."  │ [0.021, -0.03] │ maria   │ 0    │    │
+│  │ 2  │ "5 years React..." │ [0.018, 0.042] │ maria   │ 1    │    │
+│  │ 3  │ "Juan Lopez..."    │ [-0.011, 0.02] │ juan    │ 0    │    │
+│  └──────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ### Chat Flow (RAG - Semantic Search)
 
 ```
 User asks: "Who knows React?"
-     |
-     v
-+------------------------------------------------------------------+
-|  1. Create embedding of the question                              |
-|     "Who knows React?" --> [0.019, -0.031, ...]                   |
-|                                                                   |
-|  2. Search similar vectors in Supabase                            |
-|     [0.019, -0.031] ~ [0.021, -0.034]  --> maria_chunk_0         |
-|                                                                   |
-|  3. Send context + question to LLM                                |
-|     GPT-4o-mini generates response with sources                   |
-|                                                                   |
-|  4. Stream response to frontend                                   |
-|     { content: "Maria Garcia has 5 years...", sources: [...] }    |
-+------------------------------------------------------------------+
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  1. Create embedding of the question                             │
+│     "Who knows React?" ──► [0.019, -0.031, ...]                 │
+│                                                                  │
+│  2. Search similar vectors in Supabase                           │
+│     [0.019, -0.031] ~ [0.021, -0.034]  ──► maria_chunk_0       │
+│                                                                  │
+│  3. Send context + question to LLM                               │
+│     GPT-4o-mini generates response with sources                  │
+│                                                                  │
+│  4. Stream response to frontend                                  │
+│     { content: "Maria Garcia has 5 years...", sources: [...] }   │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -184,7 +184,13 @@ FRONTEND_URL=http://localhost:3000
 CVS_PATH=./data/cvs
 ```
 
-### 2. Run backend
+### 2. Supabase Setup
+
+1. Create a free account at [supabase.com](https://supabase.com) and create a new project
+2. Go to **Project Settings > API** and copy your `Project URL` and `anon public` key into your `.env`
+3. Go to **SQL Editor** and run the migration at [`backend/db/migrations/001_create_cv_chunks.sql`](backend/db/migrations/001_create_cv_chunks.sql) — this enables pgvector, creates the `cv_chunks` table, and registers the `match_cv_chunks` RPC function used for semantic search
+
+### 3. Run backend
 
 ```bash
 cd backend
@@ -192,7 +198,7 @@ npm install
 npm run dev
 ```
 
-### 3. Run frontend
+### 4. Run frontend
 
 ```bash
 cd frontend
@@ -200,7 +206,7 @@ npm install
 npm run dev
 ```
 
-### 4. Ingest CVs into Vector DB
+### 5. Ingest CVs into Vector DB
 
 Place your PDFs in `/backend/data/cvs/`, then:
 
@@ -208,7 +214,7 @@ Place your PDFs in `/backend/data/cvs/`, then:
 npm run ingest
 ```
 
-### 5. (Optional) Generate synthetic CVs
+### 6. (Optional) Generate synthetic CVs
 
 ```bash
 cd backend
