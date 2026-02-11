@@ -1,149 +1,133 @@
-# AI-Powered CV Screener
+# CV Screener AI
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+![pgvector](https://img.shields.io/badge/pgvector-336791?logo=postgresql&logoColor=white)
+
+> An intelligent assistant that lets you query a collection of PDF CVs using natural language. Ask about candidates' skills, experience, education, or compare profiles — powered by RAG with semantic search.
 
 ---
 
-## 🎯 Overview
+## Tech Stack
 
-The goal is to build an application that allows querying a collection of PDF CVs as if it were an intelligent assistant.
-
-### What does it do?
-
-- The user asks questions about candidates (skills, experience, education, comparisons)
-- The application semantically searches the CVs using embeddings
-- Returns contextual answers with references to the source documents
-
-### Example usage:
-
-> "Which candidates have experience with React and more than 3 years of work?"
+| Layer            | Technology                                        |
+| ---------------- | ------------------------------------------------- |
+| **Backend**      | Express + TypeScript                              |
+| **Frontend**     | React + Next.js + shadcn/ui                       |
+| **LLMs**         | GPT-4o-mini + Gemini 2.5 Flash (image generation) |
+| **Vector DB**    | PostgreSQL + Supabase + pgvector                  |
+| **AI Framework** | Vercel AI SDK (streaming + UI components)         |
 
 ---
 
-## 🎥 Demo
-
-[Watch Demo Video](https://res.cloudinary.com/dlpvgtdlv/video/upload/v1767991719/personal/Full-Stack_AIEngineer_-_Ivan_Escribano_xhpiin.mp4)
-
----
-
-## 🏗️ Architecture
-
-### Tech Stack
-
-| Layer               | Technology                                                             |
-| ------------------- | ---------------------------------------------------------------------- |
-| **Backend**         | Express + TypeScript                                                   |
-| **Frontend**        | React + Next.js + shadcn/ui                                            |
-| **LLMs**            | GPT-5-mini + Gemini 2.5 Flash (image generation)                       |
-| **Vector Database** | PostgreSQL + Supabase (cloud store free) + pgvector (vector databases) |
-| **AI Framework**    | Vercel AI SDK (UI Elements + Streaming responses)                      |
-
----
-
-## 🔄 Diagrams
+## Architecture
 
 ### CV Generator Script
 
 ```
 tsx scripts/cv-generator/cv-generator.script.ts
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 1: Generate CV Data (OpenAI + Zod)                        │
-│  ┌────────────────────────────────────────────────────────────┐│
-│  │  {                                                         ││
-│  │    name: "María García",                                   ││
-│  │    title: "Senior Frontend Developer",                     ││
-│  │    experience: [...], skills: [...], education: [...],     ││
-│  │    photoURL: "Professional woman, 30s, confident..." ◀── Description ││
-│  │  }                                                         ││
-│  └────────────────────────────────────────────────────────────┘│
-│  ⚡ Type-safe structured output guaranteed by Zod               │
-└─────────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 2: Generate Headshot (Gemini 2.5 Flash)                   │
-│  photoURL description ────▶ 📸 [IMAGE BUFFER]                   │
-└─────────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 3: Generate PDF (pdfkit)                                  │
-│  ┌──────────┐                                                  │
-│  │ 📸 photo │  MARÍA GARCÍA - Senior Frontend Developer        │
-│  └──────────┘  Experience • Skills • Education                 │
-└─────────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 4: Save to /data/cvs/maria_garcia.pdf ✅                  │
-└─────────────────────────────────────────────────────────────────┘
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 1: Generate CV Data (OpenAI + Zod)                          |
+|  +--------------------------------------------------------------+ |
+|  |  {                                                            | |
+|  |    name: "Maria Garcia",                                      | |
+|  |    title: "Senior Frontend Developer",                        | |
+|  |    experience: [...], skills: [...], education: [...],        | |
+|  |    photoURL: "Professional woman, 30s, confident..."          | |
+|  |  }                                                            | |
+|  +--------------------------------------------------------------+ |
+|  Type-safe structured output guaranteed by Zod                    |
++------------------------------------------------------------------+
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 2: Generate Headshot (Gemini 2.5 Flash)                     |
+|  photoURL description ------> [IMAGE BUFFER]                      |
++------------------------------------------------------------------+
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 3: Generate PDF (pdfkit)                                    |
+|  +----------+                                                     |
+|  |  photo   |  MARIA GARCIA - Senior Frontend Developer           |
+|  +----------+  Experience - Skills - Education                    |
++------------------------------------------------------------------+
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 4: Save to /data/cvs/maria_garcia.pdf                      |
++------------------------------------------------------------------+
 ```
 
-### Store embeddings in Vector Databases (PDF → Embeddings → Vector DB)
+### Store Embeddings (PDF to Vector DB)
 
 ```
 POST /ingest
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 1: Read PDFs, convert to text and chunk                   │
-│  📁 /cvs                                                        │
-│     ├── maria_garcia.pdf  ──▶  { fileId, chunks: [...] }        │
-│     ├── juan_lopez.pdf    ──▶  { fileId, chunks: [...] }        │
-│     └── ana_martinez.pdf  ──▶  { fileId, chunks: [...] }        │
-└─────────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 2: Generate embeddings in batch (OpenAI)                  │
-│                                                                 │
-│  Chunks ──────────────────▶ Embeddings                          │
-│  ["María García..."]        [0.021, -0.034, ...]                │
-│  ["5 años React..."]        [0.018, 0.042, ...]                 │
-│  ["Juan López..."]          [-0.011, 0.029, ...]                │
-│                                                                 │
-│  ⚡ Single OpenAI call for all texts                            │
-└─────────────────────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  STEP 3: Store in Supabase (pgvector)                           │
-│  ┌────────────────────────────────────────────────────────────┐│
-│  │ id │ content          │ embedding      │ file_id │ chunk  ││
-│  ├────┼──────────────────┼────────────────┼─────────┼────────┤│
-│  │ 1  │ "María García..."│ [0.021, -0.03] │ maria   │ 0      ││
-│  │ 2  │ "5 años React..."│ [0.018, 0.042] │ maria   │ 1      ││
-│  │ 3  │ "Juan López..."  │ [-0.011, 0.02] │ juan    │ 0      ││
-│  └────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────┘
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 1: Read PDFs, convert to text and chunk                     |
+|  /cvs                                                             |
+|     |- maria_garcia.pdf  -->  { fileId, chunks: [...] }           |
+|     |- juan_lopez.pdf    -->  { fileId, chunks: [...] }           |
+|     |- ana_martinez.pdf  -->  { fileId, chunks: [...] }           |
++------------------------------------------------------------------+
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 2: Generate embeddings in batch (OpenAI)                    |
+|                                                                   |
+|  Chunks ----------------------> Embeddings                        |
+|  ["Maria Garcia..."]           [0.021, -0.034, ...]               |
+|  ["5 years React..."]          [0.018, 0.042, ...]                |
+|  ["Juan Lopez..."]             [-0.011, 0.029, ...]               |
+|                                                                   |
+|  Single OpenAI call for all texts                                 |
++------------------------------------------------------------------+
+     |
+     v
++------------------------------------------------------------------+
+|  STEP 3: Store in Supabase (pgvector)                             |
+|  +--------------------------------------------------------------+ |
+|  | id | content           | embedding      | file_id | chunk    | |
+|  |----+-------------------+----------------+---------+----------| |
+|  | 1  | "Maria Garcia..." | [0.021, -0.03] | maria   | 0        | |
+|  | 2  | "5 years React..."| [0.018, 0.042] | maria   | 1        | |
+|  | 3  | "Juan Lopez..."   | [-0.011, 0.02] | juan    | 0        | |
+|  +--------------------------------------------------------------+ |
++------------------------------------------------------------------+
 ```
 
 ### Chat Flow (RAG - Semantic Search)
 
 ```
 User asks: "Who knows React?"
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  1. Create embedding of the question                            │
-│     "Who knows React?" ──▶ [0.019, -0.031, ...]                 │
-│                                                                 │
-│  2. Search similar vectors in Supabase                          │
-│     [0.019, -0.031] ≈ [0.021, -0.034]  ──▶ maria_chunk_0 ✓      │
-│                                                                 │
-│  3. Send context + question to LLM                              │
-│     GPT-5-mini generates response with sources                  │
-│                                                                 │
-│  4. Stream response to frontend                                 │
-│     { content: "María García has 5 years...", sources: [...] } │
-└─────────────────────────────────────────────────────────────────┘
+     |
+     v
++------------------------------------------------------------------+
+|  1. Create embedding of the question                              |
+|     "Who knows React?" --> [0.019, -0.031, ...]                   |
+|                                                                   |
+|  2. Search similar vectors in Supabase                            |
+|     [0.019, -0.031] ~ [0.021, -0.034]  --> maria_chunk_0         |
+|                                                                   |
+|  3. Send context + question to LLM                                |
+|     GPT-4o-mini generates response with sources                   |
+|                                                                   |
+|  4. Stream response to frontend                                   |
+|     { content: "Maria Garcia has 5 years...", sources: [...] }    |
++------------------------------------------------------------------+
 ```
 
 ---
 
-## 📁 Project Structure
-
-### Backend
+## Project Structure
 
 ```
 backend/
@@ -156,16 +140,30 @@ backend/
 │   └── ingest/              # PDF parsing + embeddings + vector storage
 ├── scripts/cv-generator/    # Synthetic CV generation
 ├── services/
-│   ├── google-gen-ai/       # Gemini Google model service functions(image generation)
-│   └── openai/              # OpenAI model service functions(Embeddings + LLM)
+│   ├── google-gen-ai/       # Gemini (image generation)
+│   └── openai/              # OpenAI (embeddings + LLM)
 └── utils/
 ```
 
 ---
 
-## ⚙️ Setup
+## Prerequisites
 
-### Environment Variables
+- **Node.js** v20.16.0 or higher
+- **Supabase account** with pgvector enabled
+- **OpenAI API key**
+- **Google Gemini API key**
+
+---
+
+## Quick Start
+
+### 1. Clone and configure
+
+```bash
+git clone https://github.com/yourusername/cv-screener-ai.git
+cd cv-screener-ai
+```
 
 Create a `.env` file in the `backend/` folder:
 
@@ -186,32 +184,7 @@ FRONTEND_URL=http://localhost:3000
 CVS_PATH=./data/cvs
 ```
 
-### Generate Synthetic CVs (Optional)
-
-```bash
-cd backend
-npm run generate:cvs
-# or manually: npx tsx scripts/cv-generator/cv-generator.script.ts
-```
-
-This will generate PDF CVs with AI-generated data and headshots in `/data/cvs/`.
-
-### Ingest CVs to Vector Database
-
-After placing your PDFs in `/backend/data/cvs/`, run the ingest script (server must be running):
-
-```bash
-npm run ingest
-# or manually: curl -X POST http://localhost:3001/api/ingest
-```
-
-This will process all PDFs, generate embeddings, and store them in Supabase.
-
----
-
-## 🚀 Run Project
-
-### Backend
+### 2. Run backend
 
 ```bash
 cd backend
@@ -219,13 +192,30 @@ npm install
 npm run dev
 ```
 
-### Frontend
+### 3. Run frontend
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
+### 4. Ingest CVs into Vector DB
+
+Place your PDFs in `/backend/data/cvs/`, then:
+
+```bash
+npm run ingest
+```
+
+### 5. (Optional) Generate synthetic CVs
+
+```bash
+cd backend
+npm run generate:cvs
+```
+
+This generates PDF CVs with AI-created data and headshots.
 
 ### Access
 
@@ -234,91 +224,28 @@ npm run dev
 
 ---
 
-## 📋 Prerequisites
+## Design Decisions
 
-- **Node.js** v20.16.0 or higher
-- **Next.js** v13 or higher
-- **Supabase account** with vector database created (pgvector enabled)
-- **OpenAI API key**
-- **Google Gemini API key**
-
----
-
-## 🔧 Technical Highlight
-
-### RAG Pipeline: PDF → Text → Chunks → Embeddings → Vector DB
-
-The most challenging and rewarding part was building the complete **RAG ingestion pipeline**:
-
-```
-PDF Files → Extract Text → Chunk Content → Generate Embeddings → Store in Supabase (pgvector)
-```
-
-I had previous experience with **ChromaDB** locally, but implementing this with **Supabase + pgvector** as a cloud-hosted vector database was a new challenge. Working with PostgreSQL's vector extension and writing the similarity search queries was really satisfying.
-
-### AI-Powered CV Generator: Multi-Model Approach
-
-I'm proud of the synthetic CV generation approach using **multiple LLMs**:
-
-1. **OpenAI (Structured Output + Zod)** → Generates type-safe CV data with a `photoURL` field containing a person description
-2. **Gemini 2.5 Flash** → Takes that description and generates a realistic headshot image
-3. **pdfkit** → Combines everything into a professional PDF
-
-This multi-model orchestration was fun to implement—each model doing what it does best.
-
-### Vercel AI SDK: Fast UI Implementation
-
-Using the **Vercel AI SDK** made the frontend implementation incredibly fast:
-
-- Streaming responses with real-time text generation
-- Rich formatting support (code blocks, tables, markdown)
-- Pre-built UI components for chat interfaces
-
-The SDK abstracted away complexity and let me focus on the user experience.
+| Decision                          | Why                                                       |
+| --------------------------------- | --------------------------------------------------------- |
+| Supabase + pgvector over ChromaDB | Cloud-hosted, zero infra management, free tier available  |
+| Multi-model (OpenAI + Gemini)     | Each model for its strength: structured text vs image gen |
+| Zod structured output             | Type-safe LLM responses, eliminates parsing errors        |
+| Vercel AI SDK                     | Native streaming + React hooks, fast UI implementation    |
+| Batch embedding ingestion         | Single API call for all chunks, reduces cost and latency  |
 
 ---
 
-## 🚀 More AI Projects
+## Example Usage
 
-Other projects where I integrate AI into real products:
+> "Which candidates have experience with React and more than 3 years of work?"
 
-### 💇 AI Barbershop - Haircut Preview
+> "Compare the backend skills of all candidates"
 
-Ever struggled to explain your desired haircut to a barber? This app takes your photo and uses **Google Gemini** to generate a preview of how you'll look with different hairstyles.
-
-[See Demo](https://www.linkedin.com/posts/ivan-escribano-dev_how-do-you-want-your-hair-cut-today-that-ugcPost-7401201682778423296-b7AW)
+> "Who would be the best fit for a senior full-stack role?"
 
 ---
 
-### ⚽ MCP Scout Football - Natural Language Player Search
+## License
 
-Scraped **3,000+ football players** data, stored in **Azure SQL**, and built an **MCP Server** that connects to Claude Desktop and ChatGPT. Query players using natural language:
-
-> "Find me a defender who's good with the ball"
-
-[See Demo](https://www.linkedin.com/posts/ivan-escribano-dev_ai-mcp-football-ugcPost-7404880226175963137-3rca)
-
----
-
-### 📊 LinkedIn Carousel Generator
-
-AI-powered tool that generates professional LinkedIn carousels in minutes.
-
-[See Demo](https://www.linkedin.com/posts/ivan-escribano-dev_10-minutes-thats-how-long-it-takes-to-ugcPost-7407383073828282368-91g4)
-
----
-
-### 💬 Portfolio Chatbot Assistant
-
-A chatbot embedded in my web portfolio that answers questions about my experience, skills, and projects using RAG.
-
-[See Demo](https://www.linkedin.com/posts/ivan-escribano-dev_2020-3-meses-para-hacer-una-web-b%C3%A1sica-ugcPost-7397568041858891776-5km4)
-
----
-
-## 🔗 Links
-
-- 🌐 [Portfolio](https://www.ivanescribano.com/)
-- 📝 [Substack](https://substack.com/@ivanescribano)
-- ✍️ [Medium](https://medium.com/@ivanescribano)
-- 💼 [LinkedIn](https://www.linkedin.com/in/ivan-escribano-dev/)
+MIT
