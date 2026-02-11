@@ -156,6 +156,174 @@ backend/
 
 ---
 
+## Supabase Setup (Required)
+
+This application uses Supabase as a PostgreSQL database with pgvector extension for semantic search. Follow these steps to set up your Supabase project.
+
+### 1. Create a Supabase Account and Project
+
+1. Go to [https://supabase.com](https://supabase.com) and click **"Start your project"**
+2. Sign up with GitHub, Google, or email
+3. Once logged in, click **"New project"**
+4. Fill in the project details:
+   - **Name**: Choose a name (e.g., "cv-screener-ai")
+   - **Database Password**: Generate a strong password (save it securely)
+   - **Region**: Select the region closest to you
+   - **Pricing Plan**: Free tier is sufficient for development
+5. Click **"Create new project"** and wait ~2 minutes for provisioning
+
+### 2. Enable pgvector Extension
+
+The application requires the pgvector extension for vector similarity search.
+
+1. In your Supabase dashboard, navigate to the **SQL Editor** (left sidebar)
+2. Click **"New query"**
+3. Run the following command:
+
+```sql
+create extension if not exists vector;
+```
+
+4. Click **"Run"** or press `Ctrl/Cmd + Enter`
+5. You should see a success message: `Success. No rows returned`
+
+### 3. Run Database Migrations
+
+The migration file creates the necessary tables and functions for storing CV embeddings.
+
+#### What the migration does:
+- Creates `cv_chunks` table to store text chunks and their vector embeddings
+- Sets up an IVFFlat index for fast similarity search
+- Creates a `match_cv_chunks` function for semantic search with similarity threshold
+
+#### Execute the migration:
+
+In the same SQL Editor, run the following SQL:
+
+```sql
+-- Chunks table
+create table cv_chunks (
+  id bigserial primary key,
+  content text not null,
+  embedding vector(1536),
+  file_id text not null,
+  chunk_index integer,
+  created_at timestamp with time zone default now()
+);
+
+-- Index for fast search
+create index on cv_chunks using ivfflat (embedding vector_cosine_ops)
+  with (lists = 100);
+
+-- Semantic search function with threshold
+create or replace function match_cv_chunks (
+  query_embedding vector(1536),
+  match_count int default 10,
+  match_threshold float default 0.7
+)
+returns table (
+  id bigint,
+  content text,
+  file_id text,
+  similarity float
+)
+language plpgsql
+as $$
+begin
+  return query
+  select
+    cv_chunks.id,
+    cv_chunks.content,
+    cv_chunks.file_id,
+    1 - (cv_chunks.embedding <=> query_embedding) as similarity
+  from cv_chunks
+  where 1 - (cv_chunks.embedding <=> query_embedding) >= match_threshold
+  order by cv_chunks.embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
+```
+
+**Note**: The complete migration file is available at `/backend/db/migrations/001_create_cv_chunks.sql`
+
+### 4. Get API Keys and Connection Details
+
+1. In your Supabase dashboard, go to **Settings** → **API** (left sidebar)
+2. You'll see two important sections:
+
+#### Project URL
+- Copy the URL under **"Project URL"**
+- Format: `https://xxxxxxxxxxxxx.supabase.co`
+- This is your `SUPABASE_URL`
+
+#### API Keys
+- **anon/public key**: Copy this key (labeled as "anon public")
+- This is your `SUPABASE_ANON_KEY`
+
+**Security Note**: 
+- ✅ Use the **anon key** for client-side and server-side applications (it respects Row Level Security policies)
+- ⚠️ The **service_role key** bypasses all security rules - only use it for trusted server environments and never expose it to clients
+
+#### Update your `.env` file
+
+In `/backend/.env`, add your credentials:
+
+```env
+# Supabase (Vector Database)
+SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+SUPABASE_ANON_KEY=your_anon_public_key_here
+
+# AI APIs
+OPENAI_API_KEY=your_openai_api_key
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
+
+# Server
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+
+# Paths
+CVS_PATH=./data/cvs
+```
+
+### 5. Verify Your Setup
+
+Before ingesting CVs, verify everything is configured correctly:
+
+#### Check pgvector extension:
+```sql
+SELECT * FROM pg_extension WHERE extname = 'vector';
+```
+
+You should see one row with `extname = 'vector'`
+
+#### Check tables were created:
+```sql
+SELECT table_name FROM information_schema.tables 
+WHERE table_schema = 'public' AND table_name = 'cv_chunks';
+```
+
+You should see the `cv_chunks` table listed.
+
+#### Check the function exists:
+```sql
+SELECT routine_name FROM information_schema.routines 
+WHERE routine_schema = 'public' AND routine_name = 'match_cv_chunks';
+```
+
+You should see `match_cv_chunks` listed.
+
+#### Test the connection from your backend:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+If the server starts without Supabase connection errors, your setup is complete! ✅
+
+---
+
 ## Quick Start
 
 ### 1. Clone and configure
