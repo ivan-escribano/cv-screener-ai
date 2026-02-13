@@ -8,7 +8,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
 ![pgvector](https://img.shields.io/badge/pgvector-336791?logo=postgresql&logoColor=white)
 
-> An intelligent assistant that lets you query a collection of PDF CVs using natural language. Ask about candidates' skills, experience, education, or compare profiles  powered by RAG with semantic search.
+> An intelligent assistant that lets you query a collection of PDF CVs using natural language. Ask about candidates' skills, experience, education, or compare profiles powered by RAG with semantic search.
 
 ---
 
@@ -28,102 +28,15 @@
 
 ### CV Generator Script
 
-```
-tsx scripts/cv-generator/cv-generator.script.ts
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 1 — Generate CV Data (OpenAI + Zod)                        │
-│  ┌──────────────────────────────────────────────────────────┐    │
-│  │  {                                                        │    │
-│  │    name: "Maria Garcia",                                  │    │
-│  │    title: "Senior Frontend Developer",                    │    │
-│  │    experience: [...], skills: [...], education: [...],    │    │
-│  │    photoURL: "Professional woman, 30s, confident..."      │    │
-│  │  }                                                        │    │
-│  └──────────────────────────────────────────────────────────┘     │
-│  Type-safe structured output guaranteed by Zod                    │
-└──────────────────────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 2 — Generate Headshot (Gemini 2.5 Flash)                   │
-│  photoURL description ──────► [IMAGE BUFFER]                     │
-└──────────────────────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 3 — Generate PDF (pdfkit)                                  │
-│  ┌──────────┐                                                    │
-│  │  photo   │  MARIA GARCIA — Senior Frontend Developer          │
-│  └──────────┘  Experience · Skills · Education                   │
-└──────────────────────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 4 — Save to /data/cvs/maria_garcia.pdf                     │
-└──────────────────────────────────────────────────────────────────┘
-```
+![CV Generator Pipeline](docs/diagrams/cv-generator-pipeline.png)
 
 ### Store Embeddings (PDF to Vector DB)
 
-```
-POST /ingest
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 1 — Read PDFs, convert to text and chunk                   │
-│  /cvs                                                            │
-│     ├─ maria_garcia.pdf  ──►  { fileId, chunks: [...] }         │
-│     ├─ juan_lopez.pdf    ──►  { fileId, chunks: [...] }         │
-│     └─ ana_martinez.pdf  ──►  { fileId, chunks: [...] }         │
-└──────────────────────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 2 — Generate embeddings in batch (OpenAI)                  │
-│                                                                  │
-│  Chunks ─────────────────────► Embeddings                        │
-│  ["Maria Garcia..."]           [0.021, -0.034, ...]              │
-│  ["5 years React..."]          [0.018, 0.042, ...]               │
-│  ["Juan Lopez..."]             [-0.011, 0.029, ...]              │
-│                                                                  │
-│  Single OpenAI call for all texts                                │
-└──────────────────────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  STEP 3 — Store in Supabase (pgvector)                           │
-│  ┌──────────────────────────────────────────────────────────┐    │
-│  │ id │ content            │ embedding      │ file_id │ chunk│    │
-│  ├────┼────────────────────┼────────────────┼─────────┼──────┤    │
-│  │ 1  │ "Maria Garcia..."  │ [0.021, -0.03] │ maria   │ 0    │    │
-│  │ 2  │ "5 years React..." │ [0.018, 0.042] │ maria   │ 1    │    │
-│  │ 3  │ "Juan Lopez..."    │ [-0.011, 0.02] │ juan    │ 0    │    │
-│  └──────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────┘
-```
+![Store Embeddings (Ingestion)](docs/diagrams/store-embeddings.png)
 
 ### Chat Flow (RAG - Semantic Search)
 
-```
-User asks: "Who knows React?"
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  1. Create embedding of the question                             │
-│     "Who knows React?" ──► [0.019, -0.031, ...]                 │
-│                                                                  │
-│  2. Search similar vectors in Supabase                           │
-│     [0.019, -0.031] ~ [0.021, -0.034]  ──► maria_chunk_0       │
-│                                                                  │
-│  3. Send context + question to LLM                               │
-│     GPT-4o-mini generates response with sources                  │
-│                                                                  │
-│  4. Stream response to frontend                                  │
-│     { content: "Maria Garcia has 5 years...", sources: [...] }   │
-└──────────────────────────────────────────────────────────────────┘
-```
+![Chat Flow (RAG - Semantic Search)](docs/diagrams/chat-flow.png)
 
 ---
 
@@ -255,3 +168,14 @@ This generates PDF CVs with AI-created data and headshots.
 ## License
 
 MIT
+
+---
+
+## Connect with me
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ivan-escribano-dev)
+[![Email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:ivanescribano1998@gmail.com)
+[![X](https://img.shields.io/badge/X-000000?logo=x&logoColor=white)](https://x.com/IvanEscribano98)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white)](https://github.com/ivan-escribano)
+[![Substack](https://img.shields.io/badge/Substack-FF6719?logo=substack&logoColor=white)](https://ivanescribano.substack.com)
+[![Medium](https://img.shields.io/badge/Medium-000000?logo=medium&logoColor=white)](https://medium.com/@ivanescribano1998)
