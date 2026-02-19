@@ -1,5 +1,6 @@
-import Chatbot from "./chatbot/Chatbot.component";
+// Actualizado
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <Chatbot />;
+  redirect("/cvs");
 }

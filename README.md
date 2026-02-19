@@ -14,21 +14,21 @@
 
 ## Tech Stack
 
-| Layer            | Technology                                        |
-| ---------------- | ------------------------------------------------- |
-| **Backend**      | Express + TypeScript                              |
-| **Frontend**     | React + Next.js + shadcn/ui                       |
-| **LLMs**         | GPT-4o-mini + Gemini 2.5 Flash (image generation) |
-| **Vector DB**    | PostgreSQL + Supabase + pgvector                  |
-| **AI Framework** | Vercel AI SDK (streaming + UI components)         |
+| Layer            | Technology                                       |
+| ---------------- | ------------------------------------------------ |
+| **Backend**      | Express + TypeScript                             |
+| **Frontend**     | React + Next.js + shadcn/ui                      |
+| **LLMs**         | GPT-5-mini + Gemini 2.5 Flash (image generation) |
+| **Vector DB**    | PostgreSQL + Supabase + pgvector                 |
+| **AI Framework** | Vercel AI SDK (streaming + UI components)        |
 
 ---
 
 ## Architecture
 
-### CV Generator Script
+### Ingest CVs (PDF to Vector DB)
 
-![CV Generator Pipeline](docs/diagrams/cv-generator-pipeline.png)
+![CV Ingestion](docs/diagrams/ingest-arquitecture.png)
 
 ### Store Embeddings (PDF to Vector DB)
 

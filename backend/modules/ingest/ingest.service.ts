@@ -87,4 +87,5 @@ const __splitIntoChunks = (text: string, fileId: string): DocumentChunk[] => {
 export const IngestService = {
   parseAllDocuments,
   insertIntoVectorStore,
+  splitIntoChunks: __splitIntoChunks, // Actualizado: expuesto para reutilizar en cvs
 };

@@ -1,5 +1,6 @@
 "use client";
 
+// Actualizado
 import {
   Message,
   MessageContent,
@@ -32,7 +33,7 @@ const ChatbotMessage = ({
   if (isAssistant && !hasText) {
     return (
       <Message from={message.role}>
-        <MessageContent className="bg-lime-50 rounded-lg p-3">
+        <MessageContent className="bg-gray-50 rounded-xl p-3">
           <ChatbotTypingIndicator />
         </MessageContent>
       </Message>
@@ -41,7 +42,9 @@ const ChatbotMessage = ({
 
   return (
     <Message from={message.role}>
-      <MessageContent className={"bg-lime-50 rounded-lg p-3"}>
+      <MessageContent
+        className={isAssistant ? "bg-gray-50 rounded-xl p-3" : ""}
+      >
         {textParts.map((part, index) => (
           <MessageResponse key={`${message.id}-${index}`}>
             {part.text}

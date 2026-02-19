@@ -5,10 +5,10 @@
 }
 
 .typingDot {
-  height: 0.5rem;
-  width: 0.5rem;
   border-radius: 9999px;
-  background-color: rgb(101 163 13);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #9ca3af;
   animation: bounce 1s infinite;
 }
 

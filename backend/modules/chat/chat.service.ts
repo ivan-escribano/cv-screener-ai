@@ -86,7 +86,7 @@ const buildRetrievalContext = async (userQuery: string): Promise<RetrievalContex
 
   const sources: DocumentSource[] = relevantChunks.map((chunk) => ({
     fileId: chunk.fileId,
-    snippet: chunk.content.slice(0, 200),
+    snippet: chunk.content,
     similarity: chunk.similarity,
   }));
 

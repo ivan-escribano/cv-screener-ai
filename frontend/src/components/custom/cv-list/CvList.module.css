@@ -1,0 +1,44 @@
+/* Actualizado */
+.tableWrapper {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.emptyTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.emptySubtext {
+  font-size: 0.875rem;
+}
+
+.fileCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.fileIcon {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.footer {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #f3f4f6;
+}

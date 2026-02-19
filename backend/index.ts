@@ -3,6 +3,7 @@ import express from 'express';
 
 import { EnvironmentConfig } from './config/env-variables/env.config.js';
 import chatRouter from './modules/chat/chat.routes.js';
+import cvsRouter from './modules/cvs/cvs.routes.js'; // Actualizado
 import ingestRouter from './modules/ingest/ingest.routes.js';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/ingest', ingestRouter);
+app.use('/api/cvs', cvsRouter); // Actualizado
 app.use('/api/chat', chatRouter);
 
 // Start server
