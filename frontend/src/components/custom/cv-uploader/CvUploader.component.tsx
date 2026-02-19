@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-// Actualizado
+import { useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { CV_UPLOADER_CONFIG } from "./CvUploader.config";
@@ -32,9 +31,15 @@ const CvUploader = ({ onSuccess }: CvUploaderProps = {}) => {
     .filter(Boolean)
     .join(" ");
 
+  const hasNotified = useRef(false);
+
   useEffect(() => {
-    if (state === UploadState.Success) {
+    if (state === UploadState.Success && !hasNotified.current) {
+      hasNotified.current = true;
       onSuccess?.();
+    }
+    if (state === UploadState.Idle) {
+      hasNotified.current = false;
     }
   }, [state, onSuccess]);
 

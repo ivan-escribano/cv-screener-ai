@@ -73,6 +73,11 @@
   display: none !important;
 }
 
+.scrollable {
+  overflow-y: auto !important;
+  min-height: 0;
+}
+
 .errorContainer {
   border-radius: var(--radius-md);
   width: fit-content;

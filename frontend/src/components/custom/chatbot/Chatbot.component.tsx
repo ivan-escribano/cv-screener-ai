@@ -1,25 +1,25 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { CvsApi } from "@/api/cvs/cvs.api";
+import { CvsApi } from '@/api/cvs/cvs.api';
 import {
   Conversation,
-  ConversationContent,
-} from "@/components/ai-elements/conversation";
+  ConversationContent
+} from '@/components/ai-elements/conversation';
 import {
   PromptInput,
   PromptInputBody,
   PromptInputFooter,
   PromptInputSubmit,
-  PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
-import { Suggestion } from "@/components/ai-elements/suggestion";
-import { CHATBOT_CONFIG, CHATBOT_STATUS } from "./Chatbot.config";
-import { useChatbot } from "./Chatbot.hooks";
-import styles from "./Chatbot.module.css";
-import ChatbotMessage from "./sub-components/chatbot-message/ChatbotMessage.component";
+  PromptInputTextarea
+} from '@/components/ai-elements/prompt-input';
+import { Suggestion } from '@/components/ai-elements/suggestion';
+import { CHATBOT_CONFIG, CHATBOT_STATUS } from './Chatbot.config';
+import { useChatbot } from './Chatbot.hooks';
+import styles from './Chatbot.module.css';
+import ChatbotMessage from './sub-components/chatbot-message/ChatbotMessage.component';
 
 const Chatbot = () => {
   const {
@@ -51,7 +51,7 @@ const Chatbot = () => {
     <div className={styles.container}>
       <div className={styles.chatWrapper}>
         <Conversation
-          className={messages.length === 0 ? styles.noScroll : "min-h-0"}
+          className={messages.length === 0 ? styles.noScroll : styles.scrollable}
         >
           <ConversationContent>
             {messages.length === 0 ? (
