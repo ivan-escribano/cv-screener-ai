@@ -77,9 +77,19 @@ frontend/
 
 ### Architecture
 
+#### RAG Pipeline Architecture
+
 ![RAG Pipeline Architecture](docs/diagrams/ingest-arquitecture.png)
 
+#### Chat Flow — RAG with Semantic Search
+
 ![Chat Flow — RAG with Semantic Search](docs/diagrams/chat-flow.png)
+
+#### Store Embeddings
+
+![Store Embeddings](docs/diagrams/store-embeddings.png)
+
+#### CV Generator Pipeline (Optional)
 
 ![CV Generator Pipeline (Optional)](docs/diagrams/cv-generator-pipeline.png)
 
