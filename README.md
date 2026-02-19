@@ -11,6 +11,11 @@
 > An intelligent assistant that lets you query a collection of PDF CVs using natural language. Ask about candidates' skills, experience, education, or compare profiles powered by RAG with semantic search.
 
 ---
+## Demo
+
+https://github.com/user-attachments/assets/7f787052-0441-412d-92ba-c7fa23444968
+
+---
 
 ## Tech Stack
 
