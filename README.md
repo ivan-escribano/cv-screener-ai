@@ -13,7 +13,7 @@ An AI-powered assistant that lets you upload PDF CVs and query them using natura
 
 ## Demo
 
-<!-- TODO: Add screenshots or GIF -->
+https://github.com/user-attachments/assets/bd877c24-745b-45f4-a6ea-1bca9cc4e38e
 
 ---
 
