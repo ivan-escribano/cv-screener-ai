@@ -1,3 +1,11 @@
+<p align="center">
+  <img 
+    src="https://github.com/user-attachments/assets/4853454e-8d31-4105-be83-107e6db14df3"
+    alt="cv-i-screener-logo"
+    width="100"
+  />
+</p>
+
 # CV Screener AI
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
