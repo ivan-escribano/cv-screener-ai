@@ -4,44 +4,39 @@
 ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
 ![pgvector](https://img.shields.io/badge/pgvector-336791?logo=postgresql&logoColor=white)
 
-> An intelligent assistant that lets you query a collection of PDF CVs using natural language. Ask about candidates' skills, experience, education, or compare profiles powered by RAG with semantic search.
+An AI-powered assistant that lets you upload PDF CVs and query them using natural language. Ask about candidates' skills, experience, or compare profiles — powered by RAG with semantic search.
 
 ---
+
 ## Demo
 
-https://github.com/user-attachments/assets/7f787052-0441-412d-92ba-c7fa23444968
+<!-- TODO: Add screenshots or GIF -->
 
 ---
 
-## Tech Stack
+## Example Queries
 
-| Layer            | Technology                                       |
-| ---------------- | ------------------------------------------------ |
-| **Backend**      | Express + TypeScript                             |
-| **Frontend**     | React + Next.js + shadcn/ui                      |
-| **LLMs**         | GPT-5-mini + Gemini 2.5 Flash (image generation) |
-| **Vector DB**    | PostgreSQL + Supabase + pgvector                 |
-| **AI Framework** | Vercel AI SDK (streaming + UI components)        |
+> "Who has experience with React and TypeScript?"
+
+> "Find candidates with more than 5 years of experience"
+
+> "Which candidate is the best fit for a backend role?"
+
+> "Compare the top 3 candidates by technical skills"
 
 ---
 
-## Architecture
+## Features
 
-### Ingest CVs (PDF to Vector DB)
-
-![CV Ingestion](docs/diagrams/ingest-arquitecture.png)
-
-### Store Embeddings (PDF to Vector DB)
-
-![Store Embeddings (Ingestion)](docs/diagrams/store-embeddings.png)
-
-### Chat Flow (RAG - Semantic Search)
-
-![Chat Flow (RAG - Semantic Search)](docs/diagrams/chat-flow.png)
+- **Upload & manage CVs** — Drag and drop PDF resumes, view them in a sortable table, delete with confirmation
+- **AI chat with RAG** — Ask questions in natural language, get answers grounded in your actual CV data
+- **Semantic search** — Finds relevant candidates even when the exact keywords don't match
+- **Source citations** — Every answer shows which CVs were used, with relevance scores
+- **Real-time streaming** — Responses stream token by token for a fast, responsive experience
+- **Synthetic CV generator** — Generate realistic test CVs with AI-created data and headshots
 
 ---
 
@@ -49,124 +44,115 @@ https://github.com/user-attachments/assets/7f787052-0441-412d-92ba-c7fa23444968
 
 ```
 backend/
-├── index.ts                 # Express server entry point
-├── config/                  # Environment & service configs
-├── data/cvs/                # PDF CVs storage
-├── db/migrations/           # Supabase vector DB setup
+├── index.ts                    # Express server entry point
+├── config/                     # Environment & service configs
+├── data/cvs/                   # PDF CVs storage
+├── db/migrations/              # Supabase vector DB setup
 ├── modules/
-│   ├── chat/                # RAG chat endpoint
-│   └── ingest/              # PDF parsing + embeddings + vector storage
-├── scripts/cv-generator/    # Synthetic CV generation
+│   ├── chat/                   # RAG chat endpoint
+│   ├── cvs/                    # CV management (list, delete)
+│   └── ingest/                 # PDF parsing + embeddings
+├── scripts/cv-generator/       # Synthetic CV generation
 ├── services/
-│   ├── google-gen-ai/       # Gemini (image generation)
-│   └── openai/              # OpenAI (embeddings + LLM)
+│   ├── google-gen-ai/          # Gemini (image generation)
+│   └── openai/                 # OpenAI (embeddings + LLM)
 └── utils/
+
+frontend/
+├── src/
+│   ├── api/                    # API clients and DTOs
+│   ├── app/
+│   │   ├── chat/               # Chat page
+│   │   └── cvs/                # CVs page
+│   ├── components/
+│   │   ├── ai-elements/        # Vercel AI SDK UI components
+│   │   ├── custom/
+│   │   │   ├── chatbot/        # Chat interface + sub-components
+│   │   │   ├── cv-list/        # Sortable table + sub-components
+│   │   │   ├── cv-uploader/    # File upload + dialog
+│   │   │   └── sidebar/        # Navigation sidebar
+│   │   └── ui/                 # shadcn/ui primitives
+│   └── config/                 # App-wide constants
 ```
 
----
+### Architecture
 
-## Prerequisites
+![Store Embeddings](docs/diagrams/store-embeddings.png)
 
-- **Node.js** v20.16.0 or higher
-- **Supabase account** with pgvector enabled
-- **OpenAI API key**
-- **Google Gemini API key**
+![Chat Flow — RAG with Semantic Search](docs/diagrams/chat-flow.png)
 
----
+### Tech Stack
 
-## Quick Start
+| Layer            | Technology                                |
+| ---------------- | ----------------------------------------- |
+| **Frontend**     | Next.js, React, shadcn/ui, Tailwind CSS   |
+| **Backend**      | Express, TypeScript                       |
+| **AI / LLMs**    | OpenAI GPT-5-mini, Gemini 2.5 Flash       |
+| **Vector DB**    | PostgreSQL, Supabase, pgvector            |
+| **AI Framework** | Vercel AI SDK (streaming + UI components) |
 
-### 1. Clone and configure
+### Getting Started
+
+#### Prerequisites
+
+- Node.js v20.16.0+
+- Supabase account with pgvector enabled
+- OpenAI API key
+- Google Gemini API key
+
+#### 1. Clone and configure
 
 ```bash
 git clone https://github.com/yourusername/cv-screener-ai.git
 cd cv-screener-ai
 ```
 
-Create a `.env` file in the `backend/` folder:
+Create `.env` in the `backend/` folder:
 
 ```env
-# Supabase (Vector Database)
 SUPABASE_URL=your_supabase_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# AI APIs
 OPENAI_API_KEY=your_openai_api_key
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
-
-# Server
 PORT=3001
 FRONTEND_URL=http://localhost:3000
-
-# Paths
 CVS_PATH=./data/cvs
 ```
 
-### 2. Supabase Setup
+#### 2. Supabase setup
 
-1. Create a free account at [supabase.com](https://supabase.com) and create a new project
-2. Go to **Project Settings > API** and copy your `Project URL` and `anon public` key into your `.env`
-3. Go to **SQL Editor** and run the migration at [`backend/db/migrations/001_create_cv_chunks.sql`](backend/db/migrations/001_create_cv_chunks.sql) — this enables pgvector, creates the `cv_chunks` table, and registers the `match_cv_chunks` RPC function used for semantic search
+1. Create a free account at [supabase.com](https://supabase.com) and start a new project
+2. Go to **Project Settings → API** and copy:
+   - `Project URL` → paste as `SUPABASE_URL` in your `.env`
+   - `anon public` key → paste as `SUPABASE_ANON_KEY` in your `.env`
+3. Go to **SQL Editor**, click **New Query**, and paste the contents of [`backend/db/migrations/001_create_cv_chunks.sql`](backend/db/migrations/001_create_cv_chunks.sql)
+4. Click **Run** — this enables the `pgvector` extension, creates the `cv_chunks` table, and registers the `match_cv_chunks` function used for semantic search
 
-### 3. Run backend
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### 4. Run frontend
+#### 3. Run the app
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Backend
+cd backend && npm install && npm run dev
+
+# Frontend (in another terminal)
+cd frontend && npm install && npm run dev
 ```
 
-### 5. Ingest CVs into Vector DB
+#### 4. (Optional) Ingest CVs via script
 
-Place your PDFs in `/backend/data/cvs/`, then:
+Place PDFs in `backend/data/cvs/`, then:
 
 ```bash
-npm run ingest
+cd backend && npm run ingest
 ```
 
-### 6. (Optional) Generate synthetic CVs
+#### 5. (Optional) Generate synthetic CVs
 
 ```bash
-cd backend
-npm run generate:cvs
+cd backend && npm run generate:cvs
 ```
 
-This generates PDF CVs with AI-created data and headshots.
-
-### Access
-
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:3001
-
----
-
-## Design Decisions
-
-| Decision                          | Why                                                       |
-| --------------------------------- | --------------------------------------------------------- |
-| Supabase + pgvector over ChromaDB | Cloud-hosted, zero infra management, free tier available  |
-| Multi-model (OpenAI + Gemini)     | Each model for its strength: structured text vs image gen |
-| Zod structured output             | Type-safe LLM responses, eliminates parsing errors        |
-| Vercel AI SDK                     | Native streaming + React hooks, fast UI implementation    |
-| Batch embedding ingestion         | Single API call for all chunks, reduces cost and latency  |
-
----
-
-## Example Usage
-
-> "Which candidates have experience with React and more than 3 years of work?"
-
-> "Compare the backend skills of all candidates"
-
-> "Who would be the best fit for a senior full-stack role?"
+**Access:** Frontend at `http://localhost:3000` · API at `http://localhost:3001`
 
 ---
 
